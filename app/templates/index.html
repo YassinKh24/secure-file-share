@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Mes fichiers{% endblock %}
+{% block content %}
+<h1>Mes fichiers</h1>
+
+<div class="card">
+  <form method="post" action="{{ url_for('files.upload') }}" enctype="multipart/form-data" class="row">
+    <div><label for="file">Déposer un fichier (chiffré AES-256-GCM)</label><input type="file" id="file" name="file"></div>
+    <button type="submit">Déposer</button>
+  </form>
+</div>
+
+<div class="card">
+  <form method="get" action="{{ url_for('files.search') }}" class="row">
+    <div><label for="q">Rechercher dans mes fichiers</label><input type="text" id="q" name="q"></div>
+    <button type="submit" class="secondary">Rechercher</button>
+  </form>
+</div>
+
+<h2>Déposés par moi</h2>
+<div class="card">
+{% if mine %}
+  <table>
+    <tr><th>Nom</th><th>Taille</th><th>Date</th><th></th></tr>
+    {% for f in mine %}
+    <tr>
+      {# VULN-03 : nom de fichier affiché sans échappement (XSS stocké) #}
+      <td>{{ f.original_name|safe }}</td>
+      <td>{{ f.size }} o</td><td>{{ f.created_at }}</td>
+      <td><a href="{{ url_for('files.file_page', file_id=f.id) }}">Ouvrir</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+{% else %}<p class="muted">Aucun fichier. Déposez-en un ci-dessus.</p>{% endif %}
+</div>
+
+<h2>Partagés avec moi</h2>
+<div class="card">
+{% if shared %}
+  <table>
+    <tr><th>Nom</th><th>De</th><th>Date</th><th></th></tr>
+    {% for f in shared %}
+    <tr>
+      <td>{{ f.original_name|safe }}</td>{# VULN-03 #}
+      <td>{{ f.owner_name }}</td><td>{{ f.created_at }}</td>
+      <td><a href="{{ url_for('files.file_page', file_id=f.id) }}">Ouvrir</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+{% else %}<p class="muted">Aucun fichier partagé avec vous.</p>{% endif %}
+</div>
+{% endblock %}

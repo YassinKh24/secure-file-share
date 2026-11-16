@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Journal{% endblock %}
+{% block content %}
+<h1>Journal d'audit</h1>
+<div class="card">
+  <table>
+    <tr><th>Horodatage (UTC)</th><th>Utilisateur</th><th>Action</th><th>Fichier</th><th>Résultat</th><th>Détails</th></tr>
+    {% for e in events %}
+    <tr><td>{{ e.ts }}</td><td>{{ e.username or '-' }}</td><td>{{ e.action }}</td><td>{{ e.file_id or '-' }}</td>
+        <td>{{ e.result }}</td><td>{{ e.details }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

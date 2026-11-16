@@ -1,0 +1,24 @@
+# Secrets and keys
+*.key
+*.csr
+*.srl
+*.pem
+keys/*
+!keys/.gitkeep
+.env
+pki/ca/
+pki/out/
+
+# Encrypted files and database
+storage/*
+!storage/.gitkeep
+instance/
+*.db
+*.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/

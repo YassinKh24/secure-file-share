@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Inscription{% endblock %}
+{% block content %}
+<h1>Inscription</h1>
+<div class="card">
+  <p class="muted">À l'inscription, une paire de clés ECDSA est générée (clé privée chiffrée par votre mot de passe) et l'AC locale vous délivre un certificat.</p>
+  <form method="post">
+    <label for="username">Nom d'utilisateur</label>
+    <input type="text" id="username" name="username" autocomplete="username">
+    <label for="email">Adresse e-mail (fictive)</label>
+    <input type="email" id="email" name="email">
+    <label for="password">Mot de passe</label>
+    <input type="password" id="password" name="password" autocomplete="new-password">
+    <p><button type="submit">Créer le compte</button></p>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Recherche{% endblock %}
+{% block content %}
+<h1>Recherche</h1>
+{# VULN-04 : terme de recherche réfléchi sans échappement (XSS réfléchi) #}
+<p>Résultats pour : <strong>{{ q|safe }}</strong></p>
+{% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+<div class="card">
+{% if results %}
+  <table>
+    <tr><th>Nom</th><th>Taille</th><th></th></tr>
+    {% for r in results %}
+    <tr><td>{{ r.original_name|safe }}</td><td>{{ r.size }} o</td>{# VULN-03 #}
+        <td><a href="{{ url_for('files.file_page', file_id=r.id) }}">Ouvrir</a></td></tr>
+    {% endfor %}
+  </table>
+{% else %}<p class="muted">Aucun résultat.</p>{% endif %}
+</div>
+{% endblock %}

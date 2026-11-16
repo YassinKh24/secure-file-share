@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Vérification{% endblock %}
+{% block content %}
+<h1>Vérification de « {{ f.original_name }} »</h1>
+
+<div class="card">
+  {% if report.ok %}
+    <p><span class="status good">Intégrité vérifiée</span></p>
+  {% else %}
+    <p><span class="status bad">Échec de vérification</span> {{ report.message }}</p>
+    {% if failed_download %}<p>Le téléchargement a été refusé et l'événement a été journalisé.</p>{% endif %}
+  {% endif %}
+  <table>
+    <tr><th>Authentification AES-GCM (fichier non modifié sur le disque)</th><td>{% if report.gcm is none %}-{% elif report.gcm %}OK{% else %}ÉCHEC{% endif %}</td></tr>
+    <tr><th>HMAC de l'empreinte (empreinte non modifiée en base)</th><td>{% if report.hmac is none %}-{% elif report.hmac %}OK{% else %}ÉCHEC{% endif %}</td></tr>
+    <tr><th>Empreinte SHA-256 recalculée</th><td>{% if report.sha256 is none %}-{% elif report.sha256 %}OK{% else %}ÉCHEC{% endif %}</td></tr>
+  </table>
+</div>
+
+{% if sig %}
+<h2>Signature numérique</h2>
+<div class="card">
+  {% if sig.status == 'valid' %}<span class="status good">Signature valide</span>
+  {% elif sig.status == 'none' %}<span class="status neutral">Non signé</span>
+  {% else %}<span class="status bad">Signature rejetée</span>{% endif %}
+  <p>{{ sig.message }}</p>
+</div>
+{% endif %}
+
+<p><a href="{{ url_for('files.file_page', file_id=f.id) }}">Retour au fichier</a></p>
+{% endblock %}

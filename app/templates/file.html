@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Fichier{% endblock %}
+{% block content %}
+{# VULN-03 : nom de fichier affiché sans échappement (XSS stocké) #}
+<h1>{{ f.original_name|safe }}</h1>
+
+<div class="card">
+  <table>
+    <tr><th>Propriétaire</th><td>{{ owner }}</td></tr>
+    <tr><th>Taille</th><td>{{ f.size }} octets</td></tr>
+    <tr><th>Déposé le</th><td>{{ f.created_at }}</td></tr>
+    <tr><th>Empreinte SHA-256</th><td class="mono">{{ f.sha256 }}</td></tr>
+  </table>
+  <p>
+    <a class="btn" href="{{ url_for('files.download', file_id=f.id) }}">Télécharger</a>
+    <a class="btn secondary" href="{{ url_for('files.verify', file_id=f.id) }}">Vérifier intégrité et signature</a>
+    <a class="btn danger" href="{{ url_for('files.delete', file_id=f.id) }}">Supprimer</a>
+  </p>
+</div>
+
+<h2>Partage</h2>
+<div class="card">
+  <form method="post" action="{{ url_for('files.share', file_id=f.id) }}" class="row">
+    <div><label for="to">Partager (lecture seule) avec</label><input type="text" id="to" name="to" placeholder="nom d'utilisateur"></div>
+    <button type="submit">Partager</button>
+  </form>
+  {% if shares %}
+  <table>
+    <tr><th>Destinataire</th><th>Depuis</th><th>État</th><th></th></tr>
+    {% for s in shares %}
+    <tr>
+      <td>{{ s.username }}</td><td>{{ s.created_at }}</td>
+      <td>{% if s.revoked_at %}révoqué{% else %}actif{% endif %}</td>
+      <td>{% if not s.revoked_at %}<a href="{{ url_for('files.revoke', share_id=s.id) }}">Révoquer</a>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</div>
+
+<h2>Signature numérique</h2>
+<div class="card">
+  <form method="post" action="{{ url_for('files.sign', file_id=f.id) }}" class="row">
+    <div><label for="password">Mot de passe (déverrouille votre clé privée)</label><input type="password" id="password" name="password"></div>
+    <button type="submit">Signer ce fichier</button>
+  </form>
+</div>
+
+<h2>Vérifier un fichier local</h2>
+<div class="card">
+  <form method="post" action="{{ url_for('files.verify_local', file_id=f.id) }}" enctype="multipart/form-data" class="row">
+    <div><label for="localfile">Comparer avec la référence de la plateforme</label><input type="file" id="localfile" name="file"></div>
+    <button type="submit" class="secondary">Comparer</button>
+  </form>
+</div>
+{% endblock %}
